@@ -14,6 +14,18 @@ export class UsersService {
     return this.userRepository.find();
   }
 
+  async getUser(id: number) {
+    const userFound = await this.userRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+    if (!userFound) {
+      return new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    return userFound;
+  }
+
   async createUser(user: CreateUserDto) {
     const userFound = await this.userRepository.findOne({
       where: {
@@ -25,5 +37,13 @@ export class UsersService {
     }
     const newUser = this.userRepository.create(user);
     return this.userRepository.save(newUser);
+  }
+
+  async deleteUser(id: number) {
+    const result = await this.userRepository.delete({ id });
+    if (result.affected === 0) {
+      return new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    return result;
   }
 }
